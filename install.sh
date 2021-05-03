@@ -5,6 +5,7 @@
 
 ### SETUP ###
 
+[ -z "$dotfilesrepo" ] && dotfilesrepo="https://github.com/philodavies/dotfiles.git"
 [ -z "$progsfile" ] && progsfile="https://raw.githubusercontent.com/philodavies/arch-install/master/progs.csv"
 [ -z "$aurhelper" ] && aurhelper="yay"
 
@@ -105,6 +106,9 @@ installationloop
 # Make zsh the default shell for the user.
 chsh -s /bin/zsh "$name" >/dev/null 2>&1
 sudo -u "$name" mkdir -p "/home/$name/.cache/zsh/"
+
+# Install dotfiles
+sh "/home/$name/.config/install/install.sh "$name" "$dotfilesrepo"
 
 # Last message! Install complete!
 finalize
