@@ -108,7 +108,7 @@ chsh -s /bin/zsh "$name" >/dev/null 2>&1
 sudo -u "$name" mkdir -p "/home/$name/.cache/zsh/"
 
 # Install dotfiles
-sh "/home/$name/.config/install/install.sh "$name" "$dotfilesrepo"
+sh "/home/$name/.config/install/install.sh" "$name" "$dotfilesrepo"
 
 # Last message! Install complete!
 finalize
