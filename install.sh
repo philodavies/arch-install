@@ -106,7 +106,7 @@ installationloop
 # Setup bootloader (rEFInd)
 refind-install
 cp /boot/* /efi/
-sed -i '1,2d' /efi/refind.conf
+sed -i '1,2d' /efi/refind_linux.conf
 
 # Setup locale
 sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen
