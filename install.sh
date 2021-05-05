@@ -103,6 +103,11 @@ manualinstall $aurhelper || error "Failed to install AUR helper."
 # and all build dependencies are installed.
 installationloop
 
+# Setup bootloader (rEFInd)
+refind-install
+cp /boot/* /efi/
+sed -i '1,2d' /efi/refind.conf
+
 # Setup locale
 sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen
 locale-gen
