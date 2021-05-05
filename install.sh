@@ -7,7 +7,6 @@
 
 [ -z "$dotfilesrepo" ] && dotfilesrepo="https://github.com/philodavies/dotfiles.git"
 [ -z "$progsfile" ] && progsfile="https://raw.githubusercontent.com/philodavies/arch-install/master/progs.csv"
-[ -z "$aurhelper" ] && aurhelper="yay"
 
 ### FUNCTIONS ###
 
@@ -37,37 +36,19 @@ adduserandpass() { \
 	echo "$name:$pass1" | chpasswd
 	unset pass1 pass2 ;}
 
-manualinstall() { # Installs $1 manually if not installed. Used only for AUR helper here.
-	[ -f "/usr/bin/$1" ] || (
-	dialog --infobox "Installing \"$1\", an AUR helper..." 4 50
-	cd /tmp || exit 1
-	rm -rf /tmp/"$1"*
-	curl -sO https://aur.archlinux.org/cgit/aur.git/snapshot/"$1".tar.gz &&
-	sudo -u "$name" tar -xvf "$1".tar.gz >/dev/null 2>&1 &&
-	cd "$1" &&
-	sudo -u "$name" makepkg --noconfirm -si >/dev/null 2>&1
-	cd /tmp || return 1) ;}
-
 maininstall() { # Installs all needed programs from main repo.
 	dialog --title "Installation" --infobox "Installing \`$1\` ($n of $total). $1 $2" 5 70
 	installpkg "$1"
 	}
 
-aurinstall() { \
-	dialog --title "Installation" --infobox "Installing \`$1\` ($n of $total) from the AUR. $1 $2" 5 70
-	echo "$aurinstalled" | grep -q "^$1$" && return 1
-	sudo -u "$name" $aurhelper -S --noconfirm "$1" >/dev/null 2>&1
-	}
-
 installationloop() { \
 	([ -f "$progsfile" ] && cp "$progsfile" /tmp/progs.csv) || curl -Ls "$progsfile" | sed '/^#/d' > /tmp/progs.csv
-	total=$(wc -l < /tmp/progs.csv)
-	aurinstalled=$(pacman -Qqm)
+	total=$(< /tmp/progs.csv|grep '^,'|wc -l)
 	while IFS=, read -r tag program comment; do
 		n=$((n+1))
 		echo "$comment" | grep -q "^\".*\"$" && comment="$(echo "$comment" | sed "s/\(^\"\|\"$\)//g")"
 		case "$tag" in
-			"A") aurinstall "$program" "$comment" ;;
+			"A") continue ;;
 			*) maininstall "$program" "$comment" ;;
 		esac
 	done < /tmp/progs.csv ;}
@@ -94,8 +75,6 @@ adduserandpass || error "Error adding username and/or password."
 # Use all cores for compilation.
 sed -i "s/-j2/-j$(nproc)/;s/^#MAKEFLAGS/MAKEFLAGS/" /etc/makepkg.conf
 
-manualinstall $aurhelper || error "Failed to install AUR helper."
-
 # The command that does all the installing. Reads the progs.csv file and
 # installs each needed program the way required. Be sure to run this only after
 # the user has been created and has privileges to run sudo without a password
@@ -104,7 +83,7 @@ installationloop
 
 # Setup bootloader (rEFInd)
 refind-install
-cp /boot/* /efi/
+mv /boot/* /efi/
 sed -i '1,2d' /efi/refind_linux.conf
 
 # Setup locale
@@ -118,6 +97,9 @@ sudo -u "$name" mkdir "/home/$name/"{Documents,Pictures,Videos,Downloads}
 # Make zsh the default shell for the user.
 chsh -s /bin/zsh "$name" >/dev/null 2>&1
 sudo -u "$name" mkdir -p "/home/$name/.cache/zsh"
+
+# Enable NetworkManager
+systemctl enable NetworkManager
 
 # Install dotfiles
 config="sudo -u $name git --git-dir=/home/$name/Git/.cfg/ --work-tree=/home/$name"
