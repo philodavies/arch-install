@@ -120,10 +120,10 @@ chsh -s /bin/zsh "$name" >/dev/null 2>&1
 sudo -u "$name" mkdir -p "/home/$name/.cache/zsh"
 
 # Install dotfiles
-alias config="sudo -u $name git --git-dir=/home/$name/Git/.cfg/ --work-tree=/home/$name"
+config="sudo -u $name git --git-dir=/home/$name/Git/.cfg/ --work-tree=/home/$name"
 sudo -u "$name" mkdir -p "/home/$name/Git"
-config clone --bare "$repo" "/home/$name/Git/.cfg"
-config checkout
+$config clone --bare "$dotfilesrepo" "/home/$name/Git/.cfg"
+$config checkout
 
 sh "/home/$name/.config/install/install.sh" "$name"
 
