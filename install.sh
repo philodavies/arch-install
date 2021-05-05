@@ -114,7 +114,7 @@ locale-gen
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
 
 # Create user's home dirs
-sudo -u "$name" mkdir "/home/$name/{Documents,Pictures,Videos,Downloads}"
+sudo -u "$name" mkdir "/home/$name/"{Documents,Pictures,Videos,Downloads}
 
 # Make zsh the default shell for the user.
 chsh -s /bin/zsh "$name" >/dev/null 2>&1
