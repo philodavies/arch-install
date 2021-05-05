@@ -44,13 +44,14 @@ maininstall() { # Installs all needed programs from main repo.
 installationloop() { \
 	([ -f "$progsfile" ] && cp "$progsfile" /tmp/progs.csv) || curl -Ls "$progsfile" | sed '/^#/d' > /tmp/progs.csv
 	total=$(grep '^,' /tmp/progs.csv | wc -l)
+    n=1
 	while IFS=, read -r tag program comment; do
-		n=$((n+1))
 		echo "$comment" | grep -q "^\".*\"$" && comment="$(echo "$comment" | sed "s/\(^\"\|\"$\)//g")"
 		case "$tag" in
 			"A") continue ;;
 			*) maininstall "$program" "$comment" ;;
 		esac
+		n=$((n+1))
 	done < /tmp/progs.csv ;}
 
 ### THE ACTUAL SCRIPT ###

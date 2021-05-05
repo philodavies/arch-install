@@ -40,13 +40,14 @@ installationloop() { \
 	([ -f "$progsfile" ] && cp "$progsfile" /tmp/progs.csv) || curl -Ls "$progsfile" | sed '/^#/d' > /tmp/progs.csv
     total=$(grep '^A,' /tmp/progs.csv | wc -l)
 	aurinstalled=$(pacman -Qqm)
+    n=1
 	while IFS=, read -r tag program comment; do
-		n=$((n+1))
 		echo "$comment" | grep -q "^\".*\"$" && comment="$(echo "$comment" | sed "s/\(^\"\|\"$\)//g")"
 		case "$tag" in
 			"A") aurinstall "$program" "$comment" ;;
 			*) continue ;;
 		esac
+		n=$((n+1))
 	done < /tmp/progs.csv ;}
 
 ### THE ACTUAL SCRIPT ###
