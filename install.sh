@@ -43,7 +43,7 @@ maininstall() { # Installs all needed programs from main repo.
 
 installationloop() { \
 	([ -f "$progsfile" ] && cp "$progsfile" /tmp/progs.csv) || curl -Ls "$progsfile" | sed '/^#/d' > /tmp/progs.csv
-	total=$(< /tmp/progs.csv|grep '^,'|wc -l)
+	total=$(grep '^,' /tmp/progs.csv | wc -l)
 	while IFS=, read -r tag program comment; do
 		n=$((n+1))
 		echo "$comment" | grep -q "^\".*\"$" && comment="$(echo "$comment" | sed "s/\(^\"\|\"$\)//g")"

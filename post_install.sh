@@ -5,6 +5,7 @@
 
 ### SETUP ###
 
+[ -z "$progsfile" ] && progsfile="https://raw.githubusercontent.com/philodavies/arch-install/master/progs.csv"
 [ -z "$aurhelper" ] && aurhelper="yay"
 
 ### FUNCTIONS ###
@@ -37,7 +38,7 @@ aurinstall() { \
 
 installationloop() { \
 	([ -f "$progsfile" ] && cp "$progsfile" /tmp/progs.csv) || curl -Ls "$progsfile" | sed '/^#/d' > /tmp/progs.csv
-    total=$(< /tmp/progs.csv|grep '^A,'|wc -l)
+    total=$(grep '^A,' /tmp/progs.csv | wc -l)
 	aurinstalled=$(pacman -Qqm)
 	while IFS=, read -r tag program comment; do
 		n=$((n+1))
