@@ -103,9 +103,17 @@ manualinstall $aurhelper || error "Failed to install AUR helper."
 # and all build dependencies are installed.
 installationloop
 
+# Setup locale
+sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen
+locale-gen
+echo "LANG=en_US.UTF-8" > /etc/locale.conf
+
+# Create user's home dirs
+sudo -u "$name" mkdir "/home/$name/{Documents,Pictures,Videos,Downloads}"
+
 # Make zsh the default shell for the user.
 chsh -s /bin/zsh "$name" >/dev/null 2>&1
-sudo -u "$name" mkdir -p "/home/$name/.cache/zsh/"
+sudo -u "$name" mkdir -p "/home/$name/.cache/zsh"
 
 # Install dotfiles
 sh "/home/$name/.config/install/install.sh" "$name" "$dotfilesrepo"
